@@ -106,7 +106,6 @@ function HomePage() {
         <ul style={styles.navLinks}>
           <li><a href="#home" style={styles.navLink}>Home</a></li>
           <li><a href="#about" style={styles.navLink}>About Us</a></li>
-          <li><a href="#login" style={styles.loginButton}>Login</a></li>
         </ul>
       </nav>
       <div style={styles.landingPage}>

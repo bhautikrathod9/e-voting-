@@ -1,12 +1,13 @@
+// src/components/AdminLogin.js
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom"; // Import Link and useNavigate
 import Lottie from 'lottie-react';
 import animationData from './Animation-1.json'; // Import your Lottie animation JSON
 import axios from 'axios'; // Import axios
 
-const Login = () => {
+const AdminLogin = () => {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [secretKey, setSecretKey] = useState(""); // State for unique secret key
   const [error, setError] = useState("");
   const [isHovered, setIsHovered] = useState(false); // State for hover effect
 
@@ -19,18 +20,13 @@ const Login = () => {
 
     try {
       // Send login request to the server
-      const response = await axios.post('http://localhost:1000/api/auth/login', { username: email, password });
+      const response = await axios.post('http://localhost:1000/api/auth/admin-login', { username: email, secretKey });
 
       if (response.data.success) {
-          // Send OTP to the user's email
-          const otpResponse = await axios.post('http://localhost:1000/api/send-otp', { email }); // Send OTP
-
-          if (otpResponse.data.success) {
-              // Redirect to the OTP verification page
-              navigate("/otp-verification", { state: { email } }); // Pass email to OTP verification page
-          } else {
-              setError(otpResponse.data.message || 'Failed to send OTP. Please try again.');
-          }
+          // Redirect to the admin dashboard or another page
+          navigate("/admin-dashboard"); // Change this to your admin dashboard route
+      } else {
+          setError(response.data.message || 'Login failed. Please try again.');
       }
     } catch (err) {
       // Handle errors
@@ -43,7 +39,7 @@ const Login = () => {
 
     // Reset the form
     setEmail("");
-    setPassword("");
+    setSecretKey("");
   };
 
   return (
@@ -52,7 +48,7 @@ const Login = () => {
         <Lottie animationData={animationData} style={styles.image} />
       </div>
       <div style={styles.formCard}>
-        <h2 style={styles.title}>Login</h2>
+        <h2 style={styles.title}>Admin Login</h2>
         <form onSubmit={handleSubmit}>
           <div style={styles.inputGroup}>
             <label style={styles.label}>Email:</label>
@@ -65,11 +61,11 @@ const Login = () => {
             />
           </div>
           <div style={styles.inputGroup}>
-            <label style={styles.label}>Password:</label>
+            <label style={styles.label}>Secret Key:</label>
             <input
               type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={secretKey}
+              onChange={(e) => setSecretKey(e.target.value)}
               required
               style={styles.input}
             />
@@ -90,14 +86,9 @@ const Login = () => {
           </div>
         </form>
         <p style={styles.footer}>
-          Don't have an account?{" "}
-          <Link to="/signup" style={styles.link}>
-            Sign up here
-          </Link>
-        </p>
-        <p style={styles.footer}>
-          <Link to="/admin-login" style={styles.link}>
-            Login as Admin
+          Back to{" "}
+          <Link to="/login" style={styles.link}>
+            User Login
           </Link>
         </p>
       </div>
@@ -105,7 +96,7 @@ const Login = () => {
   );
 };
 
-// Styles (same as before)
+// Styles
 const styles = {
   container: {
     display: "flex",
@@ -137,42 +128,43 @@ const styles = {
   },
   title: {
     textAlign: "center",
+    fontSize : "24px",
     marginBottom: "20px",
   },
   inputGroup: {
-    marginBottom: "20px",
+    marginBottom: "15px",
   },
   label: {
     display: "block",
-    marginBottom: "10px",
+    marginBottom: "5px",
   },
   input: {
     width: "100%",
     padding: "10px",
-    borderRadius: "4px",
-    marginBottom: "10px",
+    borderRadius: "5px",
     border: "1px solid #333",
-    backgroundColor: "#2a2a2a",
-    color: "#fff",
+    backgroundColor: "#2a2a2a", // Change background color of input fields
+    color: "#fff", // Change text color of input fields
+  },
+  error: {
+    color: "red",
+    textAlign: "center",
+    marginBottom: "10px",
   },
   buttonContainer: {
-    display: "flex",
-    justifyContent: "center ", // Center the button
+    textAlign: "center",
   },
   button: {
-    width: "50%",
-    padding: "10px",
-    backgroundColor: "#007bff",
-    color: "#fff",
+    padding: "10px 20px",
     border: "none",
     borderRadius: "5px",
+    backgroundColor: "#007bff",
+    color: "#fff",
     cursor: "pointer",
-    transition: "background-color 0.3s, box-shadow 0.3s", // Add transition for box-shadow
-    boxShadow: "0 0 5px rgba(0, 123, 255, 0.5)", // Initial shadow
+    transition: "background-color 0.3s",
   },
   buttonHover: {
-    backgroundColor: "#0056b3", // Darker blue on hover
-    boxShadow: "0 0 15px rgba(0, 123, 255, 1)", // Glowing effect on hover
+    backgroundColor: "#0056b3",
   },
   footer: {
     textAlign: "center",
@@ -182,10 +174,6 @@ const styles = {
     color: "#007bff",
     textDecoration: "none",
   },
-  error: {
-    color: "red",
-    textAlign: "center",
-  },
 };
 
-export default Login;
+export default AdminLogin;

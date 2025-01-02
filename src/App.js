@@ -11,6 +11,7 @@ import Form from './components/Form';
 import ProfilePage from "./components/profilePage";
 import OtpVerification from "./components/otpVerification"; // Import the OtpVerification component
 import LandingPage from "./components/landingPage"; // Import the LandingPage component
+import AdminLogin from "./components/adminLogin"; // Import the AdminLogin component
 
 function App() {
   const [currentElection, setCurrentElection] = useState(null);
@@ -52,6 +53,7 @@ function App() {
           <Route path="/" element={<LandingPage />} /> {/* Set LandingPage as the default route */}
           <Route path="/signup" element={<SignUp onSignUpComplete={handleSignUpComplete} />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/admin-login" element={<AdminLogin />} /> {/* Add route for AdminLogin */}
           <Route path="/otp-verification" element={<OtpVerification />} /> {/* Add OTP verification route */}
           <Route path="/election-selection" element={<ElectionSelectionPage onVoteNow={handleVoteNow} />} />
           <Route path="/voting" element={<VotingPage electionId={currentElection} onSubmitVote={handleSubmitVote} />} />

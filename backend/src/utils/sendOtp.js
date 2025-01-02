@@ -5,17 +5,17 @@ require('dotenv').config(); // Load environment variables from .env file
 const sendOtp = async (email, otp) => {
     // Create a transporter object using Mailgun SMTP transport
     const transporter = nodemailer.createTransport({
-        host: 'smtp.mailgun.org', // Mailgun SMTP hostname
+        host: 'smtp.mailersend.net', // Mailgun SMTP hostname
         port: 587, // Recommended port
         auth: {
-            user: 'postmaster@sandbox73e79200879742a0871d15fa9edfc7e1.mailgun.org', // Mailgun username
-            pass: 'f4012eb253695c2bea16237238b7350f-e61ae8dd-d615367e', // Mailgun password
+            user: 'MS_2LTjee@trial-jpzkmgqj3evl059v.mlsender.net', // Mailgun username
+            pass: 'JzkIbrUTUqImgKfR', // Mailgun password
         },
     });
 
     // Set up email data
     const mailOptions = {
-        from: 'postmaster@sandbox73e79200879742a0871d15fa9edfc7e1.mailgun.org', // Sender address
+        from: 'MS_2LTjee@trial-jpzkmgqj3evl059v.mlsender.net', // Sender address
         to: email, // List of recipients
         subject: 'Your OTP Code', // Subject line
         text: `Your OTP code is ${otp}. It is valid for 5 minutes.`, // Plain text body

@@ -1,4 +1,3 @@
-// src/App.js
 import React, { useState } from "react";
 import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom"; // Import Navigate
 import ElectionSelectionPage from "./components/ElectionSelectionPage";
@@ -12,6 +11,7 @@ import ProfilePage from "./components/profilePage";
 import OtpVerification from "./components/otpVerification"; // Import the OtpVerification component
 import LandingPage from "./components/landingPage"; // Import the LandingPage component
 import AdminLogin from "./components/adminLogin"; // Import the AdminLogin component
+import Dashboard from "./components/Dashboard/dashboard"; // Import the Dashboard component
 
 function App() {
   const [currentElection, setCurrentElection] = useState(null);
@@ -66,6 +66,7 @@ function App() {
           <Route path="/history" element={<VoterHistoryPage onReturnToDashboard={handleReturnToDashboard} />} />
           <Route path="/profile" element={<ProfilePage />} /> 
           <Route path="/form" element={isSignedUp ? <Form /> : <Navigate to="/signup" />} /> {/* Conditional rendering for form */}
+          <Route path="/dashboard" element={<Dashboard />} /> {/* Add route for Dashboard */}
         </Routes>
       </div>
     </Router>

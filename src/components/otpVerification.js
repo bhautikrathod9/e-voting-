@@ -27,6 +27,8 @@ const OtpVerification = () => {
                 // Integrate MetaMask
                 await connectMetaMask(response.data.walletAddress); // Pass the wallet address to the connect function
             }
+
+            localStorage.setItem("authorization", response.data.token)
         } catch (err) {
             if (err.response) {
                 setError(err.response.data.message || 'Invalid OTP. Please try again.');
@@ -61,22 +63,24 @@ const OtpVerification = () => {
 
     return (
         <div style={styles.container}>
-            <h2>OTP Verification</h2>
-            <form onSubmit={handleVerifyOtp}>
-                <input
-                    type="text"
-                    value={otp}
-                    onChange={(e) => setOtp(e.target.value)}
-                    required
-                    placeholder="Enter OTP"
-                    style={styles.input}
-                />
-                <button type="submit" style={styles.button} disabled={loading}>
-                    {loading ? 'Verifying...' : 'Verify OTP'}
-                </button>
-            </form>
-            {error && <p style={styles.error}>{error}</p>}
-            {success && <p style={styles.success}>OTP verified successfully! Connecting to MetaMask...</p>}
+            <div style={styles.card}>
+                <h2 style={styles.title}>OTP Verification</h2>
+                <form onSubmit={handleVerifyOtp}>
+                    <input
+                        type="text"
+                        value={otp}
+                        onChange={(e) => setOtp(e.target.value)}
+                        required
+                        placeholder="Enter OTP"
+                        style={styles.input}
+                    />
+                    <button type="submit" style={styles.button} disabled={loading}>
+                        {loading ? 'Verifying...' : 'Verify OTP'}
+                    </button>
+                </form>
+                {error && <p style={styles.error}>{error}</p>}
+                {success && <p style={styles.success}>OTP verified successfully! Connecting to MetaMask...</p>}
+            </div>
         </div>
     );
 };
@@ -85,20 +89,35 @@ const OtpVerification = () => {
 const styles = {
     container: {
         display: 'flex',
-        flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
         height: '100vh',
         backgroundColor: '#121212',
         color: '#fff',
     },
+    card: {
+        padding: '40px',
+        backgroundColor: '#1e1e1e',
+        borderRadius: '12px',
+        boxShadow: '0 0 50px rgba(0, 123, 255, 0.5)',
+        maxWidth: '400px',
+        width: '100%',
+        textAlign: 'center',
+    },
+    title: {
+        marginBottom: '20px',
+        fontSize: '24px',
+        fontWeight: 'bold',
+    },
     input: {
         padding: '10px',
-        margin: '10px 0',
+        margin: '10px 0px',
         borderRadius: '4px',
         border: '1px solid #333',
         backgroundColor: '#2a2a2a',
         color: '#fff',
+        width: '95%',
+        fontSize: '16px',
     },
     button: {
         padding: '10px 20px',
@@ -108,6 +127,8 @@ const styles = {
         color: '#fff',
         cursor: 'pointer',
         transition: 'background-color 0.3s',
+        width: '100%',
+        fontSize: '16px',
     },
     buttonDisabled: {
         backgroundColor: '#555',
@@ -115,9 +136,11 @@ const styles = {
     },
     error: {
         color: 'red',
+        marginTop: '10px',
     },
     success: {
         color: 'green',
+        marginTop: '10px',
     },
 };
 

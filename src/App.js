@@ -1,3 +1,4 @@
+// src/App.js
 import React, { useState } from "react";
 import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom"; // Import Navigate
 import ElectionSelectionPage from "./components/ElectionSelectionPage";
@@ -9,6 +10,7 @@ import Login from "./components/login"; // Import the Login component
 import Form from './components/Form';
 import ProfilePage from "./components/profilePage";
 import OtpVerification from "./components/otpVerification"; // Import the OtpVerification component
+import LandingPage from "./components/landingPage"; // Import the LandingPage component
 
 function App() {
   const [currentElection, setCurrentElection] = useState(null);
@@ -47,6 +49,7 @@ function App() {
         }}
       >
         <Routes>
+          <Route path="/" element={<LandingPage />} /> {/* Set LandingPage as the default route */}
           <Route path="/signup" element={<SignUp onSignUpComplete={handleSignUpComplete} />} />
           <Route path="/login" element={<Login />} />
           <Route path="/otp-verification" element={<OtpVerification />} /> {/* Add OTP verification route */}
@@ -59,7 +62,6 @@ function App() {
             />
           } />
           <Route path="/history" element={<VoterHistoryPage onReturnToDashboard={handleReturnToDashboard} />} />
-          <Route path="/" element={<Navigate to="/signup" />} /> {/* Redirect to sign-up */}
           <Route path="/profile" element={<ProfilePage />} /> 
           <Route path="/form" element={isSignedUp ? <Form /> : <Navigate to="/signup" />} /> {/* Conditional rendering for form */}
         </Routes>

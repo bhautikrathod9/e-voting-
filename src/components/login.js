@@ -22,19 +22,22 @@ const Login = () => {
       const response = await axios.post('http://localhost:1000/api/auth/login', { username: email, password });
 
       if (response.data.success) {
-        const token = response.data.token; // Get the token from the response
-        localStorage.setItem('token', token); // Store the token in local storage
-        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`; // Set the token in axios headers
+          // Send OTP to the user's email
+          const otpResponse = await axios.post('http://localhost:1000/api/send-otp', { email }); // Send OTP
 
-        // Redirect to the election selection page or dashboard after successful login
-        navigate("/election-selection"); // Change this to your desired route
+          if (otpResponse.data.success) {
+              // Redirect to the OTP verification page
+              navigate("/otp-verification", { state: { email } }); // Pass email to OTP verification page
+          } else {
+              setError(otpResponse.data.message || 'Failed to send OTP. Please try again.');
+          }
       }
     } catch (err) {
       // Handle errors
       if (err.response) {
-        setError(err.response.data.message || 'Login failed. Please try again.');
+          setError(err.response.data.message || 'Login failed. Please try again.');
       } else {
-        setError('An error occurred. Please try again.');
+          setError('An error occurred. Please try again.');
       }
     }
 

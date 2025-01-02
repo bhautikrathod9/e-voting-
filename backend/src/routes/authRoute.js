@@ -5,6 +5,7 @@ const { body, validationResult } = require('express-validator');
 const rateLimit = require('express-rate-limit');
 const jwt = require('jsonwebtoken');
 const authenticateToken = require('../middleware/authenticate');
+const sendOtp = require('../utils/sendOtp').sendOtp;
 require('dotenv').config(); // Load environment variables
 
 const router = express.Router();
@@ -75,11 +76,17 @@ router.post('/login', [
             return res.status(401).json({ success: false, message: 'Invalid credentials' });
         }
 
-        // Generate a JWT token
+        // Generate a JWT token (optional, if you want to keep the session)
         const token = jwt.sign({ id: user._id }, "bhautik", { expiresIn: '1h' });
 
-        // Send the token back to the client
-        res.json({ success: true, token });
+        // Generate and send OTP
+        // const otp = Math.floor(100000 + Math.random() * 900000); Generate a 6-digit OTP
+        // await sendOtp(user.email, otp); Send OTP to user's email
+
+        await user.save();
+
+        // Send response indicating that the OTP has been sent
+        res.json({ success: true, message: 'OTP sent to your email', token }); // Send token if needed
     } catch (error) {
         console.error(error);
         return res.status(500).json({ success: false, message: 'Internal server error' });

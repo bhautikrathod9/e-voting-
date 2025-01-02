@@ -8,6 +8,7 @@ const connectDB = require('./src/config/db');
 const authenticateToken = require('./src/middleware/authenticate');
 const authRoutes = require('./src/routes/authRoute');
 const Form = require('./src//routes/form');
+const otpRoute = require('./src/routes/otpRoute');
 
 const app = express();
 const PORT = 1000;
@@ -21,6 +22,7 @@ connectDB();
 
 app.use('/api/auth', authRoutes);
 app.use('/api/form', Form);
+app.use('/api/', otpRoute);
 
 // Start the server
 app.listen(PORT, () => {

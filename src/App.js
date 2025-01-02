@@ -8,6 +8,7 @@ import SignUp from "./components/signUp"; // Import the SignUp component
 import Login from "./components/login"; // Import the Login component
 import Form from './components/Form';
 import ProfilePage from "./components/profilePage";
+import OtpVerification from "./components/otpVerification"; // Import the OtpVerification component
 
 function App() {
   const [currentElection, setCurrentElection] = useState(null);
@@ -48,6 +49,7 @@ function App() {
         <Routes>
           <Route path="/signup" element={<SignUp onSignUpComplete={handleSignUpComplete} />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/otp-verification" element={<OtpVerification />} /> {/* Add OTP verification route */}
           <Route path="/election-selection" element={<ElectionSelectionPage onVoteNow={handleVoteNow} />} />
           <Route path="/voting" element={<VotingPage electionId={currentElection} onSubmitVote={handleSubmitVote} />} />
           <Route path="/confirmation" element={

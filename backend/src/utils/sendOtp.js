@@ -8,14 +8,14 @@ const sendOtp = async (email, otp) => {
         host: 'smtp.mailgun.org', // Mailgun SMTP hostname
         port: 587, // Recommended port
         auth: {
-            user: 'postmaster@sandboxf40c87ef72554867866bfb8b3c925163.mailgun.org', // Mailgun username
-            pass: '702ab0dbdec04ebe1cca6c311b79904a-e61ae8dd-b4c281d5', // Mailgun password
+            user: 'postmaster@sandbox73e79200879742a0871d15fa9edfc7e1.mailgun.org', // Mailgun username
+            pass: 'f4012eb253695c2bea16237238b7350f-e61ae8dd-d615367e', // Mailgun password
         },
     });
 
     // Set up email data
     const mailOptions = {
-        from: 'noreply@sandboxf40c87ef72554867866bfb8b3c925163.mailgun.org', // Sender address
+        from: 'postmaster@sandbox73e79200879742a0871d15fa9edfc7e1.mailgun.org', // Sender address
         to: email, // List of recipients
         subject: 'Your OTP Code', // Subject line
         text: `Your OTP code is ${otp}. It is valid for 5 minutes.`, // Plain text body

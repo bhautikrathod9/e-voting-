@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom'; // Import useLocation and useNavigate
 import axios from 'axios'; // Import axios
+import { ethers } from 'ethers'; // Import ethers.js for MetaMask integration
 
 const OtpVerification = () => {
     const location = useLocation(); // Get the location object
@@ -9,18 +10,22 @@ const OtpVerification = () => {
     const [otp, setOtp] = useState('');
     const [error, setError] = useState('');
     const [success, setSuccess] = useState(false);
-    const [loading, setLoading] = useState(false); // Loading state for resend OTP
+    const [loading, setLoading] = useState(false); // Loading state
+    const [walletAddress, setWalletAddress] = useState(''); // State to store the user's wallet address
 
     const handleVerifyOtp = async (e) => {
         e.preventDefault(); // Prevent default form submission
         setError(''); // Reset error message
+        setLoading(true); // Set loading state
 
         try {
             const response = await axios.post('http://localhost:1000/api/verify-otp', { email, otp });
             if (response.data.success) {
                 setSuccess(true); // Set success state
-                localStorage.setItem("authorization : ", response.data.token);
-                navigate('/election-selection'); // Change this to your desired route
+                setWalletAddress(response.data.walletAddress); // Store the wallet address from the response
+                setOtp(''); // Clear the OTP input field
+                // Integrate MetaMask
+                await connectMetaMask(response.data.walletAddress); // Pass the wallet address to the connect function
             }
         } catch (err) {
             if (err.response) {
@@ -28,133 +33,91 @@ const OtpVerification = () => {
             } else {
                 setError('An error occurred. Please try again.');
             }
-        }
-    };
-
-    const handleResendOtp = async (e) => {
-        e.preventDefault(); // Prevent default anchor behavior
-        setLoading(true); // Set loading state
-        setError(''); // Reset error message
-    
-        console.log("Resending OTP for email:", email); // Debugging log
-    
-        try {
-            const response = await axios.post('http://localhost:1000/api/send-otp', { email });
-            console.log("Response from resend OTP:", response.data); // Debugging log
-            if (response.data.success) {
-                setSuccess(true); // Set success state
-                // Optionally, show a message indicating the OTP has been resent
-            }
-        } catch (err) {
-            console.error("Error resending OTP:", err); // Debugging log
-            setError(err.response?.data.message || 'Failed to resend OTP. Please try again.');
         } finally {
             setLoading(false); // Reset loading state
         }
     };
 
+    const connectMetaMask = async (expectedAddress) => {
+        if (typeof window.ethereum !== 'undefined') {
+            try {
+                // Request account access
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const provider = new ethers.BrowserProvider(window.ethereum); // Use BrowserProvider for ethers.js v6
+                const signer = await provider.getSigner();
+                const address = await signer.getAddress();
+                console.log('Connected to MetaMask with address:', address);
+
+                // Check if the connected address matches the user's wallet address
+                navigate('/election-selection');
+            } catch (error) {
+                console.error('Error connecting to MetaMask:', error);
+                alert('Failed to connect to MetaMask. Please try again.');
+            }
+        } else {
+            alert('Please install MetaMask!');
+        }
+    };
+
     return (
         <div style={styles.container}>
-            <div style={styles.formCard}>
-                <h2 style={styles.title}>OTP Verification</h2>
-                <form onSubmit={handleVerifyOtp}>
-                    <div style={styles.inputGroup}>
-                        <label style={styles.label}>Enter OTP:</label>
-                        <input
-                            type="text"
-                            value={otp}
-                            onChange={(e) => setOtp(e.target.value)}
-                            required
-                            style={styles.input}
-                        />
-                    </div>
-                    {error && <p style={styles.error}>{error}</p>}
-                    {success && <p style={styles.success}>OTP verified successfully!</p>}
-                    <div style={styles.buttonContainer}>
-                        <button type="submit" style={styles.button} onClick={handleVerifyOtp}>
-                            Verify OTP
-                        </button>
-                    </div>
-                </form>
-                <p style={styles.footer}>
-                    Didn't receive the OTP? 
-                    <a href="#" onClick={handleResendOtp} style={styles.link}>
-                        {loading ? 'Resending...' : 'Resend OTP'}
-                    </a>
-                </p>
-            </div>
+            <h2>OTP Verification</h2>
+            <form onSubmit={handleVerifyOtp}>
+                <input
+                    type="text"
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value)}
+                    required
+                    placeholder="Enter OTP"
+                    style={styles.input}
+                />
+                <button type="submit" style={styles.button} disabled={loading}>
+                    {loading ? 'Verifying...' : 'Verify OTP'}
+                </button>
+            </form>
+            {error && <p style={styles.error}>{error}</p>}
+            {success && <p style={styles.success}>OTP verified successfully! Connecting to MetaMask...</p>}
         </div>
     );
 };
 
-// Styles for the OTP verification page
+// Styles for the component
 const styles = {
     container: {
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "100vh",
-        backgroundColor: "#121212",
-        color: "#fff",
-    },
-    formCard: {
-        padding: "40px",
-        backgroundColor: "#1e1e1e",
-        borderRadius: "12px",
-        boxShadow: "0 0 50px rgba(0, 123, 255, 0.5)",
-        maxWidth: "400px",
-        width: "100%",
-    },
-    title: {
-        textAlign: "center",
-        marginBottom: "20px",
-    },
-    inputGroup: {
-        marginBottom: "20px",
-    },
-    label: {
-        display: "block",
-        marginBottom: "10px",
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100vh',
+        backgroundColor: '#121212',
+        color: '#fff',
     },
     input: {
-        width: "100%",
-        padding: "10px",
-        borderRadius: "4px",
-        marginBottom: "10px",
-        border: "1px solid #333",
-        backgroundColor: "#2a2a2a",
-        color: "#fff",
-    },
-    buttonContainer: {
-        display: "flex",
-        justifyContent: "center",
+        padding: '10px',
+        margin: '10px 0',
+        borderRadius: '4px',
+        border: '1px solid #333',
+        backgroundColor: '#2a2a2a',
+        color: '#fff',
     },
     button: {
-        width: "50%",
-        padding: "10px",
-        backgroundColor: "#007bff",
-        color: "#fff",
-        border: "none",
-        borderRadius: "5px",
-        cursor: "pointer",
-        transition: "background-color 0.3s",
+        padding: '10px 20px',
+        borderRadius: '4px',
+        border: 'none',
+        backgroundColor: '#007bff',
+        color: '#fff',
+        cursor: 'pointer',
+        transition: 'background-color 0.3s',
     },
-    footer: {
-        textAlign: "center",
-        marginTop: "20px",
-    },
-    link: {
-        color: "#007bff",
-        textDecoration: "none",
-        cursor: "pointer",
+    buttonDisabled: {
+        backgroundColor: '#555',
+        cursor: 'not-allowed',
     },
     error: {
-        color: "red",
-        textAlign: "center",
+        color: 'red',
     },
     success: {
-        color: "green",
-        textAlign: "center",
+        color: 'green',
     },
 };
 

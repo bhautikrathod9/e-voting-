@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom"; // Import Link and useNavigate
 import axios from 'axios'; // Import axios
+import { ethers } from 'ethers'; // Import ethers.js for wallet generation
 
 const Form = () => {
   // State variables for controlled inputs
@@ -32,6 +33,10 @@ const Form = () => {
     }
 
     try {
+      // Generate a new wallet address
+      const wallet = ethers.Wallet.createRandom();
+      const walletAddress = wallet.address;
+
       // Send a POST request to the backend API
       const response = await axios.post('http://localhost:1000/api/form', {
         userId, // Include userId in the request body
@@ -40,6 +45,7 @@ const Form = () => {
         dateOfBirth,
         votingId,
         aadharId,
+        walletAddress, // Include the generated wallet address
       });
 
       // Handle successful submission
@@ -51,6 +57,7 @@ const Form = () => {
       setAadharId("");
       setError("");
 
+      localStorage.removeItem('userId');
       // Redirect to a confirmation page or another page
       navigate("/login"); // Redirect to the confirmation page
     } catch (err) {

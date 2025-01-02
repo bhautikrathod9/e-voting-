@@ -37,8 +37,9 @@ const Sidebar = () => {
     // Remove the token from local storage
     localStorage.removeItem('token');
     localStorage.removeItem('userId');
+    localStorage.removeItem('authorization');
     // Optionally, you can also remove the token from axios defaults
-    delete axios.defaults.headers.common['Authorization'];
+    delete axios.defaults.headers.common['authorization'];
     // Redirect to the login page
     navigate('/login'); // Change this to your desired route
   };

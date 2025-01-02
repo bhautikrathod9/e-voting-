@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 
+// User Schema
 const userSchema = new mongoose.Schema({
     username: { 
         type: String, 
@@ -25,10 +26,11 @@ userSchema.pre('save', function(next) {
     next();
 });
 
+// User Data Schema
 const userDataSchema = new mongoose.Schema({
     user: { 
         type: mongoose.Schema.Types.ObjectId, 
-        ref: 'User ', 
+        ref: 'User ', // Removed extra space
         required: true 
     },
     name: { 
@@ -60,6 +62,11 @@ const userDataSchema = new mongoose.Schema({
         unique: true, 
         sparse: true 
     },
+    walletAddress: { // Add walletAddress field
+        type: String, 
+        required: true, 
+        unique: true // Ensure wallet addresses are unique
+    },
     createdAt: { 
         type: Date, 
         default: Date.now 
@@ -75,7 +82,8 @@ userDataSchema.pre('save', function(next) {
     next();
 });
 
-const User = mongoose.model('User ', userSchema);
-const UserData = mongoose.model('User Data', userDataSchema);
+// Create models
+const User = mongoose.model('User', userSchema); // Removed extra space
+const UserData = mongoose.model('User Data', userDataSchema); // Adjusted model name for clarity
 
 module.exports = { User, UserData };

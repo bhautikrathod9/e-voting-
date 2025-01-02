@@ -10,14 +10,15 @@ router.post('', [
     body('name').notEmpty().withMessage('Name is required'),
     body('mobileNumber').isLength({ min: 10, max: 10 }).withMessage('Mobile number must be 10 digits long'),
     body('dateOfBirth').isDate().withMessage('Invalid date of birth'),
-    body('votingId').notEmpty().withMessage('Voting ID is required')
+    body('votingId').notEmpty().withMessage('Voting ID is required'),
+    body('walletAddress').notEmpty().withMessage('Wallet address is required') // Validate wallet address
 ], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ success: false, errors: errors.array() });
     }
 
-    const { userId, name, mobileNumber, dateOfBirth, votingId, aadharId } = req.body;
+    const { userId, name, mobileNumber, dateOfBirth, votingId, aadharId, walletAddress } = req.body;
 
     // Validate userId
     if (!userId) {
@@ -32,7 +33,8 @@ router.post('', [
             mobileNumber,
             dateOfBirth,
             votingId,
-            aadharId
+            aadharId,
+            walletAddress // Save the wallet address from the request body
         });
         await userData.save();
 

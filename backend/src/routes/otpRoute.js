@@ -1,6 +1,7 @@
 const express = require('express');
 const { sendOtp } = require('../utils/sendOtp'); // Import the sendOtp function
 const router = express.Router();
+const { User } = require('../models/voter');
 const jwt = require("jsonwebtoken");
 
 // In-memory store for OTPs (for demonstration purposes only)
@@ -33,21 +34,35 @@ router.post('/send-otp', async (req, res) => {
 });
 
 // Route to verify OTP
-router.post('/verify-otp', (req, res) => {
+router.post('/verify-otp', async (req, res) => {
     const { email, otp } = req.body;
 
     if (!email || !otp) {
         return res.status(400).json({ success: false, message: 'Email and OTP are required' });
     }
 
+    console.log(`Verifying OTP for email: ${email}`); // Log the email being verified
+
+    // Check if the OTP is valid
     if (otpStore[email] && otpStore[email] === otp) {
+        // Delete the OTP after successful verification
         delete otpStore[email];
+
+        // Fetch the user from the database
+        const user = await User.findOne({ username : email });
+        if (!user) {
+            console.log(`User not found for email: ${email}`); // Log if user is not found
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        // Generate a JWT token
         const token = jwt.sign({ email }, "bhautik", { expiresIn: '1h' }); // Adjust the payload and expiration as needed
 
         return res.status(200).json({
             success: true,
             message: 'OTP verified successfully',
             token: token, // Send the token in the response
+            walletAddress: user.walletAddress // Include the user's wallet address
         });
     }
 

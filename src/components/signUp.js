@@ -54,6 +54,11 @@ const SignUp = ({ onSignUpComplete }) => {
     }
   };
 
+  // Navigate to Admin Sign-Up page
+  const handleAdminSignUp = () => {
+    navigate("/admin-signup"); // Redirect to the admin sign-up page
+  };
+
   return (
     <div style={styles.container}>
       <div style={styles.imageContainer}>
@@ -112,7 +117,20 @@ const SignUp = ({ onSignUpComplete }) => {
           <Link to="/login" style={styles.link}>
             Login here
           </Link>
-        </p>
+        </ p>
+        <div style={styles.adminButtonContainer}>
+          <button
+            onClick={handleAdminSignUp}
+            style={{
+              ...styles.button,
+              ...(isHovered ? styles.buttonHover : {}),
+            }}
+            onMouseEnter={() => setIsHovered(true)} // Set hover state
+            onMouseLeave={() => setIsHovered(false)} // Reset hover state
+          >
+            Sign Up for Admin
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -167,6 +185,11 @@ const styles = {
   buttonContainer: {
     display: "flex",
     justifyContent: "center", // Center the button
+  },
+  adminButtonContainer: {
+    display: "flex",
+    justifyContent: "center",
+    marginTop: "20px", // Add margin for spacing
   },
   button: {
     width: "50%",

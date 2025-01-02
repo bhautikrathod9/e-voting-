@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom"; // Import Link and useNavigate
 import axios from 'axios'; // Import axios
-import { ethers } from 'ethers'; // Import ethers.js for wallet generation
+import { ethers } from 'ethers'; // Import ethers.js for MetaMask integration
 
 const Form = () => {
   // State variables for controlled inputs
@@ -12,7 +12,6 @@ const Form = () => {
   const [aadharId, setAadharId] = useState("");
   const [error, setError] = useState("");
   const [isHovered, setIsHovered] = useState(false); // State for hover effect
-
   const navigate = useNavigate(); // Initialize useNavigate
 
   // Handle form submission
@@ -33,33 +32,40 @@ const Form = () => {
     }
 
     try {
-      // Generate a new wallet address
-      const wallet = ethers.Wallet.createRandom();
-      const walletAddress = wallet.address;
+      // Check if MetaMask is installed
+      if (typeof window.ethereum !== 'undefined') {
+        // Request account access
+        await window.ethereum.request({ method: 'eth_requestAccounts' });
+        const provider = new ethers.BrowserProvider(window.ethereum); // Use BrowserProvider for ethers.js v6
+        const signer = await provider.getSigner();
+        const walletAddress = await signer.getAddress(); // Get the wallet address
 
-      // Send a POST request to the backend API
-      const response = await axios.post('http://localhost:1000/api/form', {
-        userId, // Include userId in the request body
-        name,
-        mobileNumber,
-        dateOfBirth,
-        votingId,
-        aadharId,
-        walletAddress, // Include the generated wallet address
-      });
+        // Send a POST request to the backend API
+        const response = await axios.post('http://localhost:1000/api/form', {
+          userId, // Include userId in the request body
+          name,
+          mobileNumber,
+          dateOfBirth,
+          votingId,
+          aadharId,
+          walletAddress, // Include the retrieved wallet address
+        });
 
-      // Handle successful submission
-      console.log(response.data); // Log the response from the server
-      setName("");
-      setMobileNumber("");
-      setDateOfBirth("");
-      setVotingId("");
-      setAadharId("");
-      setError("");
+        // Handle successful submission
+        console.log(response.data); // Log the response from the server
+        setName("");
+        setMobileNumber("");
+        setDateOfBirth("");
+        setVotingId("");
+        setAadharId("");
+        setError("");
 
-      localStorage.removeItem('userId');
-      // Redirect to a confirmation page or another page
-      navigate("/login"); // Redirect to the confirmation page
+        localStorage.removeItem('userId');
+        // Redirect to a confirmation page or another page
+        navigate("/login"); // Redirect to the confirmation page
+      } else {
+        setError("Please install MetaMask to proceed.");
+      }
     } catch (err) {
       // Handle errors
       if (err.response) {
@@ -82,7 +88,7 @@ const Form = () => {
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
-              placeholder="Enter your name" // Placeholder added
+              placeholder="Enter your name"
               style={styles.input}
             />
           </div>
@@ -93,7 +99,7 @@ const Form = () => {
               value={mobileNumber}
               onChange={(e) => setMobileNumber(e.target.value)}
               required
-              placeholder="Enter your mobile number" // Placeholder added
+              placeholder="Enter your mobile number"
               style={styles.input}
             />
           </div>
@@ -112,9 +118,9 @@ const Form = () => {
             <input
               type="text"
               value={votingId}
-              onChange={(e) => setVotingId(e.target.value)}
+              onChange={(e ) => setVotingId(e.target.value)}
               required
-              placeholder="Enter your voting ID" // Placeholder added
+              placeholder="Enter your voting ID"
               style={styles.input}
             />
           </div>
@@ -125,7 +131,7 @@ const Form = () => {
               value={aadharId}
               onChange={(e) => setAadharId(e.target.value)}
               required
-              placeholder="Enter your Aadhar ID" // Placeholder added
+              placeholder="Enter your Aadhar ID"
               style={styles.input}
             />
           </div>

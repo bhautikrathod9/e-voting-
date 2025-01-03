@@ -10,6 +10,7 @@ const CreateElectionForm = () => {
     const [image, setImage] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false); // Loading state
+    const [success, setSuccess] = useState(false); // Success state
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -38,11 +39,14 @@ const CreateElectionForm = () => {
         };
 
         setLoading(true); // Set loading state
+        setError(''); // Clear previous errors
+        setSuccess(false); // Reset success state
 
         try {
             // Make a POST request to the API
             const response = await axios.post('http://localhost:1000/api/election/create', newElection);
             console.log('Election Created:', response.data);
+            setSuccess(true); // Set success state
 
             // Reset form fields
             setElectionName('');
@@ -51,10 +55,9 @@ const CreateElectionForm = () => {
             setEndDate('');
             setOngoing(true);
             setImage('');
-            setError(''); // Clear error message
         } catch (err) {
             console.error('Error creating election:', err);
-            setError('Failed to create election. Please try again.'); // Set error message
+            setError(err.response?.data?.message || 'Failed to create election. Please try again.'); // Set error message
         } finally {
             setLoading(false); // Reset loading state
         }
@@ -77,7 +80,7 @@ const CreateElectionForm = () => {
                     }
 
                     .election-form input, .election-form textarea {
- margin-bottom: 10px;
+                        margin-bottom: 10px;
                         padding: 10px;
                         border: 1px solid #ccc;
                         border-radius: 4px;
@@ -107,36 +110,46 @@ const CreateElectionForm = () => {
                         color: yellow;
                         margin-bottom: 10px;
                     }
+
+                    .success {
+                        color: green;
+                        margin-bottom: 10px;
+                    }
                 `}
             </style>
-            <form onSubmit={handleSubmit} className="election-form">
+            <form onSubmit={handleSubmit} className="election-form" aria-label="Create Election Form">
                 <h2>Create Election</h2>
                 {error && <p className="error">{error}</p>}
                 {loading && <p className="loading">Creating election...</p>}
+                {success && <p className="success">Election created successfully!</p>}
                 <input
-                    type="text"
+ type="text"
                     placeholder="Election Name"
                     value={electionName}
                     onChange={(e) => setElectionName(e.target.value)}
                     required
+                    aria-label="Election Name"
                 />
                 <textarea
                     placeholder="Description"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     required
+                    aria-label="Description"
                 />
                 <input
                     type="date"
                     value={startDate}
                     onChange={(e) => setStartDate(e.target.value)}
                     required
+                    aria-label="Start Date"
                 />
                 <input
                     type="date"
                     value={endDate}
                     onChange={(e) => setEndDate(e.target.value)}
                     required
+                    aria-label="End Date"
                 />
                 <input
                     type="url"
@@ -144,12 +157,14 @@ const CreateElectionForm = () => {
                     value={image}
                     onChange={(e) => setImage(e.target.value)}
                     required
+                    aria-label="Image URL"
                 />
                 <label>
                     <input
                         type="checkbox"
                         checked={ongoing}
                         onChange={(e) => setOngoing(e.target.checked)}
+                        aria-label="Ongoing Election"
                     />
                     Ongoing
                 </label>

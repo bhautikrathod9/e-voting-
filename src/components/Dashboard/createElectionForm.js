@@ -1,28 +1,63 @@
 import React, { useState } from 'react';
+import axios from 'axios'; // Import axios for making API requests
 
 const CreateElectionForm = () => {
     const [electionName, setElectionName] = useState('');
+    const [description, setDescription] = useState('');
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
+    const [ongoing, setOngoing] = useState(true);
+    const [image, setImage] = useState('');
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false); // Loading state
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         
         // Basic validation
-        if (!electionName || !startDate || !endDate) {
+        if (!electionName || !description || !startDate || !endDate || !image) {
             setError('All fields are required.');
             return;
         }
 
-        // Handle election creation logic here
-        console.log('Election Created:', { electionName, startDate, endDate });
+        // Check if end date is after start date
+        if (new Date(endDate) < new Date(startDate)) {
+            setError('End date must be after start date.');
+            return;
+        }
 
-        // Reset form fields
-        setElectionName('');
-        setStartDate('');
-        setEndDate('');
-        setError(''); // Clear error message
+        // Handle election creation logic here
+        const newElection = {
+            id: Date.now() + Math.floor(Math.random() * 1000), // Generate a unique ID
+            name: electionName,
+            description,
+            startTime: startDate,
+            endTime: endDate,
+            ongoing,
+            image,
+        };
+
+        setLoading(true); // Set loading state
+
+        try {
+            // Make a POST request to the API
+            const response = await axios.post('http://localhost:1000/api/election/create', newElection);
+            console.log('Election Created:', response.data);
+
+            // Reset form fields
+            setElectionName('');
+            setDescription('');
+            setStartDate('');
+            setEndDate('');
+            setOngoing(true);
+            setImage('');
+            setError(''); // Clear error message
+        } catch (err) {
+            console.error('Error creating election:', err);
+            setError('Failed to create election. Please try again.'); // Set error message
+        } finally {
+            setLoading(false); // Reset loading state
+        }
     };
 
     return (
@@ -41,14 +76,13 @@ const CreateElectionForm = () => {
                         color: white;
                     }
 
-                    .election-form input {
-                        margin-bottom: 10px;
+                    .election-form input, .election-form textarea {
+ margin-bottom: 10px;
                         padding: 10px;
                         border: 1px solid #ccc;
                         border-radius: 4px;
                         background-color: black;
-                        color:white;
-                        
+                        color: white;
                     }
 
                     .election-form button {
@@ -62,11 +96,15 @@ const CreateElectionForm = () => {
 
                     .election-form button:hover {
                         background-color: #0056b3;
-                    
                     }
 
                     .error {
                         color: red;
+                        margin-bottom: 10px;
+                    }
+
+                    .loading {
+                        color: yellow;
                         margin-bottom: 10px;
                     }
                 `}
@@ -74,11 +112,18 @@ const CreateElectionForm = () => {
             <form onSubmit={handleSubmit} className="election-form">
                 <h2>Create Election</h2>
                 {error && <p className="error">{error}</p>}
+                {loading && <p className="loading">Creating election...</p>}
                 <input
                     type="text"
                     placeholder="Election Name"
                     value={electionName}
                     onChange={(e) => setElectionName(e.target.value)}
+                    required
+                />
+                <textarea
+                    placeholder="Description"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
                     required
                 />
                 <input
@@ -93,7 +138,22 @@ const CreateElectionForm = () => {
                     onChange={(e) => setEndDate(e.target.value)}
                     required
                 />
-                <button type="submit">Create Election</button>
+                <input
+                    type="url"
+                    placeholder="Image URL"
+                    value={image}
+                    onChange={(e) => setImage(e.target.value)}
+                    required
+                />
+                <label>
+                    <input
+                        type="checkbox"
+                        checked={ongoing}
+                        onChange={(e) => setOngoing(e.target.checked)}
+                    />
+                    Ongoing
+                </label>
+                <button type="submit" disabled={loading}>Create Election</button>
             </form>
         </div>
     );

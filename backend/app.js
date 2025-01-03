@@ -9,6 +9,7 @@ const authRoutes = require('./src/routes/authRoute'); // User authentication rou
 const adminRoutes = require('./src/routes/adminRoute'); // Admin routes
 const Form = require('./src/routes/form'); // Form routes
 const otpRoute = require('./src/routes/otpRoute'); // OTP routes
+const election = require('./src/routes/election-routes/electionList')
 
 const app = express();
 const PORT = 1000;
@@ -31,6 +32,8 @@ app.use('/api/form', Form);
 
 // OTP routes
 app.use('/api/otp', otpRoute);
+
+app.use('/api/election', election);
 
 // Start the server
 app.listen(PORT, () => {

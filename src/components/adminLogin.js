@@ -1,4 +1,3 @@
-// src/components/AdminLogin.js
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom"; // Import Link and useNavigate
 import Lottie from 'lottie-react';
@@ -10,7 +9,6 @@ const AdminLogin = () => {
   const [secretKey, setSecretKey] = useState(""); // State for unique secret key
   const [error, setError] = useState("");
   const [isHovered, setIsHovered] = useState(false); // State for hover effect
-
   const navigate = useNavigate(); // Initialize useNavigate
 
   // Handle form submission
@@ -20,20 +18,20 @@ const AdminLogin = () => {
 
     try {
       // Send login request to the server
-      const response = await axios.post('http://localhost:1000/api/auth/admin-login', { username: email, secretKey });
+      const response = await axios.post('http://localhost:1000/api/admin/login', { email, secretKey });
 
       if (response.data.success) {
-          // Redirect to the admin dashboard or another page
-          navigate("/admin-dashboard"); // Change this to your admin dashboard route
+        // Redirect to the admin dashboard or another page
+        navigate("/dashboard"); // Change this to your admin dashboard route
       } else {
-          setError(response.data.message || 'Login failed. Please try again.');
+        setError(response.data.message || 'Login failed. Please try again.');
       }
     } catch (err) {
       // Handle errors
       if (err.response) {
-          setError(err.response.data.message || 'Login failed. Please try again.');
+        setError(err.response.data.message || 'Login failed. Please try again.');
       } else {
-          setError('An error occurred. Please try again.');
+        setError('An error occurred. Please try again.');
       }
     }
 
@@ -128,7 +126,7 @@ const styles = {
   },
   title: {
     textAlign: "center",
-    fontSize : "24px",
+    fontSize: " 24px",
     marginBottom: "20px",
   },
   inputGroup: {

@@ -11,7 +11,9 @@ import ProfilePage from "./components/profilePage";
 import OtpVerification from "./components/otpVerification"; // Import the OtpVerification component
 import LandingPage from "./components/landingPage"; // Import the LandingPage component
 import AdminLogin from "./components/adminLogin"; // Import the AdminLogin component
-import Dashboard from "./components/Dashboard/dashboard"; // Import the Dashboard component
+import AdminSignUp from "./components/adminSignuup"; // Import the AdminSignUp component
+import SecretKeyPage from "./components/secretKeypage"; // Import the SecretKeyPage component
+import AdminDashboard from "./components/Dashboard/dashboard"; // Import the AdminDashboard component
 
 function App() {
   const [currentElection, setCurrentElection] = useState(null);
@@ -54,6 +56,8 @@ function App() {
           <Route path="/signup" element={<SignUp onSignUpComplete={handleSignUpComplete} />} />
           <Route path="/login" element={<Login />} />
           <Route path="/admin-login" element={<AdminLogin />} /> {/* Add route for AdminLogin */}
+          <Route path="/admin-signup" element={<AdminSignUp />} /> {/* Add route for AdminSignUp */}
+          <Route path="/secret-key" element={<SecretKeyPage />} /> {/* Add route for SecretKeyPage */}
           <Route path="/otp-verification" element={<OtpVerification />} /> {/* Add OTP verification route */}
           <Route path="/election-selection" element={<ElectionSelectionPage onVoteNow={handleVoteNow} />} />
           <Route path="/voting" element={<VotingPage electionId={currentElection} onSubmitVote={handleSubmitVote} />} />
@@ -66,7 +70,9 @@ function App() {
           <Route path="/history" element={<VoterHistoryPage onReturnToDashboard={handleReturnToDashboard} />} />
           <Route path="/profile" element={<ProfilePage />} /> 
           <Route path="/form" element={isSignedUp ? <Form /> : <Navigate to="/signup" />} /> {/* Conditional rendering for form */}
-          <Route path="/dashboard" element={<Dashboard />} /> {/* Add route for Dashboard */}
+          
+          {/* Admin Dashboard Route */}
+          <Route path="/dashboard" element={<AdminDashboard />} /> {/* Direct access to Admin Dashboard */}
         </Routes>
       </div>
     </Router>

@@ -4,59 +4,36 @@ import axios from 'axios'; // Import axios
 import animationData from './Animation-1.json';
 import Lottie from "lottie-react";
 
-const SignUp = ({ onSignUpComplete }) => {
-  // State variables for controlled inputs
+const AdminSignUp = () => {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
-  const [isHovered, setIsHovered] = useState(false); // State for hover effect
-
   const navigate = useNavigate(); // Initialize useNavigate
 
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (password !== confirmPassword) {
-      setError("Passwords do not match!");
-      return;
-    }
 
     try {
-      // Send a POST request to the backend API
-      const response = await axios.post('http://localhost:1000/api/auth/register', {
-        username: email, // Assuming you want to use email as username
-        password: password,
+      // Send a POST request to the backend API for admin registration
+      const response = await axios.post('http://localhost:1000/api/admin/register', {
+        email, // Use email directly
       });
 
       // Handle successful registration
       console.log(response.data); // Log the response from the server
       setEmail("");
-      setPassword("");
-      setConfirmPassword("");
       setError("");
-      onSignUpComplete(); // Call the completion handler
 
-      // Store the user ID in local storage
-      localStorage.setItem('userId', response.data.userId); // Store userId in local storage
-      console.log('User  ID stored in local storage:', response.data.userId);
-
-      // Redirect to the form page after sign-up
-      navigate("/form"); // Redirect to the form page
+      // Redirect to the secret key page after sign-up, passing the secret key
+      navigate("/secret-key", { state: { secretKey: response.data.secretKey } }); // Redirect to the secret key page
     } catch (err) {
       // Handle errors (e.g., user already exists)
       if (err.response) {
-        // Check if the error response has a message
         setError(err.response.data.message || "An error occurred. Please try again."); // Set error message from server response
       } else {
         setError("An error occurred. Please try again."); // Generic error message
       }
     }
-  };
-
-  // Navigate to Admin Sign-Up page
-  const handleAdminSignUp = () => {
-    navigate("/admin-signup"); // Redirect to the admin sign-up page
   };
 
   return (
@@ -65,7 +42,7 @@ const SignUp = ({ onSignUpComplete }) => {
         <Lottie animationData={animationData} style={styles.image} />
       </div>
       <div style={styles.formCard}>
-        <h2 style={styles.title}>Sign Up</h2>
+        <h2 style={styles.title}>Admin Sign Up</h2>
         <form onSubmit={handleSubmit}>
           <div style={styles.inputGroup}>
             <label style={styles.label}>Email:</label>
@@ -77,36 +54,11 @@ const SignUp = ({ onSignUpComplete }) => {
               style={styles.input}
             />
           </div>
-          <div style={styles.inputGroup}>
-            <label style={styles.label}>Password:</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              style={styles.input}
-            />
-          </div>
-          <div style={styles.inputGroup}>
-            <label style={styles.label}>Confirm Password:</label>
-            <input
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-              style={styles.input}
-            />
-          </div>
           {error && <p style={styles.error}>{error}</p>} {/* Render error message */}
           <div style={styles.buttonContainer}>
             <button
               type="submit"
-              style={{
-                ...styles.button,
-                ...(isHovered ? styles.buttonHover : {}),
-              }}
-              onMouseEnter={() => setIsHovered(true)} // Set hover state
-              onMouseLeave={() => setIsHovered(false)} // Reset hover state
+              style={styles.button}
             >
               Sign Up
             </button>
@@ -114,23 +66,10 @@ const SignUp = ({ onSignUpComplete }) => {
         </form>
         <p style={styles.footer}>
           Already have an account?{" "}
-          <Link to="/login" style={styles.link}>
+          <Link to="/admin-login" style={styles.link}>
             Login here
           </Link>
-        </ p>
-        <div style={styles.adminButtonContainer}>
-          <button
-            onClick={handleAdminSignUp}
-            style={{
-              ...styles.button,
-              ...(isHovered ? styles.buttonHover : {}),
-            }}
-            onMouseEnter={() => setIsHovered(true)} // Set hover state
-            onMouseLeave={() => setIsHovered(false)} // Reset hover state
-          >
-            Sign Up for Admin
-          </button>
-        </div>
+        </p>
       </div>
     </div>
   );
@@ -186,11 +125,6 @@ const styles = {
     display: "flex",
     justifyContent: "center", // Center the button
   },
-  adminButtonContainer: {
-    display: "flex",
-    justifyContent: "center",
-    marginTop: "20px", // Add margin for spacing
-  },
   button: {
     width: "50%",
     padding: "10px",
@@ -201,10 +135,6 @@ const styles = {
     cursor: "pointer",
     transition: "background-color 0.3s, box-shadow 0.3s", // Add transition for box-shadow
     boxShadow: "0 0 5px rgba(0, 123, 255, 0.5)", // Initial shadow
-  },
-  buttonHover: {
-    backgroundColor: "#0056b3", // Darker blue on hover
-    boxShadow: "0 0 15px rgba(0, 123, 255, 1)", // Glowing effect on hover
   },
   footer: {
     textAlign: "center",
@@ -220,4 +150,4 @@ const styles = {
   },
 };
 
-export default SignUp;
+export default AdminSignUp;
